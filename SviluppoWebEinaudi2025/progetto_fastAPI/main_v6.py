@@ -24,18 +24,20 @@ manager.cookie_name = "access-token"
 @app.exception_handler(StarletteHTTPException)
 async def custom_unauthorized_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 401:
-        return RedirectResponse(url="/login")
-    return HTMLResponse(f"<h1>Errore {exc.status_code}</h1><p>{exc.detasil}</p>", status_code=exc.status_code)
+        return RedirectResponse(url="/login", status_code=303)  # 303 per cambiare metodo a GET
+    return HTMLResponse(f"<h1>Errore {exc.status_code}</h1><p>{exc.detail}</p>", status_code=exc.status_code)
 
 @manager.user_loader()
 def load_user(user: str):
     return database_py.db_get_utenti(user)
 
-
-
 @app.get("/")
+def root_redirect():
+    return RedirectResponse(url="/login", status_code=303)
+
+@app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "message": "","titolo": "Homepage"})
+    return templates.TemplateResponse("login.html", {"request": request, "message": ""})
 
 
 @app.post("/login")
@@ -94,31 +96,31 @@ def dashboard(request: Request, user = Depends(manager)):
 
 
 
-
-
 @app.get("/add_book", response_class=HTMLResponse)
-def book_form(request: Request):
+def book_form(request: Request, user=Depends(manager)):
     return templates.TemplateResponse("add_book.html", {"request": request})
 
 @app.post("/add_book")
 def add_book(
+    request: Request,
     titolo: str = Form(...),
     autore: str = Form(...),
     anno_pubblicazione: int = Form(...),
     editore: str = Form(...),
     isbn: str = Form(...),
-    disponibilita: int = Form(...)
+    disponibilita: int = Form(...),
+    user=Depends(manager)  # Aggiungi questa dipendenza
 ):
     dati = (titolo, autore, anno_pubblicazione, editore, isbn, disponibilita)
     database_py.inserisci_libro(dati)
     return RedirectResponse(url="/dashboard", status_code=303)
 
 
-@app.post("/prenota")
+'''@app.post("/prenota")
 def prenota_libro(request: Request, id_libro: int = Form(...), user=Depends(manager)):
     utente = database_py.db_get_utenti(user[6])
     id_utente = utente[0]
-
+    user=Depends(manager)
     # Decrementa la disponibilità
     database_py.decrementa_disponibilita(id_libro)
 
@@ -130,8 +132,48 @@ def prenota_libro(request: Request, id_libro: int = Form(...), user=Depends(mana
 
 @app.post("/prenota")
 def prenota_libro(request: Request, id_libro: int = Form(...), user=Depends(manager)):
+    user=Depends(manager)
     print("Prenotazione ricevuta per ID libro:", id_libro)
+'''
+@app.post("/prenota")
+def prenota_libro(request: Request,id_libro: int = Form(...),user=Depends(manager) ):
+    try:
+        # Verifica se l'utente esiste nel database
+        utente = database_py.db_get_utenti(user[6])
+        if not utente:
+            raise HTTPException(status_code=404, detail="Utente non trovato")
+        
+        id_utente = utente[0]  # Supponendo che l'ID sia il primo campo
 
+        # Debug: stampa l'ID libro (opzionale)
+        print("Prenotazione ricevuta per ID libro:", id_libro)
+
+        # Verifica disponibilità libro (aggiungi questa funzione se non esiste)
+        libro = database_py.get_libro(id_libro)
+        if not libro or libro["disponibilita"] <= 0:
+            return templates.TemplateResponse(
+                "dashboard.html",
+                {"request": request, "error": "Libro non disponibile!"},
+                status_code=400
+            )
+
+        # Decrementa disponibilità e aggiunge prestito
+        database_py.decrementa_disponibilita(id_libro)
+        database_py.aggiungi_prestito(
+            id_libro=id_libro,
+            id_utente=id_utente,
+            data_prestito=datetime.now().date()
+        )
+
+        return RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+
+    except Exception as e:
+        print("Errore durante la prenotazione:", str(e))
+        return templates.TemplateResponse(
+            "dashboard.html",
+            {"request": request, "error": "Errore durante la prenotazione"},
+            status_code=500
+        )
 
 
 @app.get("/home_search")
