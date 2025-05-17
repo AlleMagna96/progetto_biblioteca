@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard</h1>
+        </header>
+        <nav>
+            <ul>
+                <li><a href="#" id="home"> Prenota</a></li>
+                <li><a href="#" id="stats">Elenco Libri</a></li>
+                <li><a href="#" id="settings">Prenotazioni</a></li>
+                {%if permessi == 1 %}
+                <li><a href="/add_book" id="settings">Gestione Libri</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <main>
+            <div class="card" id="home-content">
+                <h2>Benvenuto!</h2>
+                <p>Questa è la tua dashboard personale.</p>
+            </div>
+            <div class="card hidden" id="stats-content">
+                <h2>Elenco Libri</h2>
+                <p><table class="book-table">
+                    <thead>
+                        <tr>
+                            <th>Titolo</th>
+                            <th>Autore</th>
+                            <th>Anno</th>
+                            <th>Editore</th>
+                            <th>ISBN</th>
+                            <th>Disponibilità</th>
+                            <th>Prenota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for Libri in products %}
+                        <tr>
+                            <td>{{ Libri['titolo'] }}</td>
+                            <td>{{ Libri['autore'] }}</td>
+                            <td>{{ Libri['anno_pubblicazione'] }}</td>
+                            <td>{{ Libri['editore'] }}</td>
+                            <td>{{ Libri['isbn'] }}</td>
+                            <td>{{ Libri['disponibilita'] }}</td>
+                            <td>
+                                {% if Libri['disponibilita'] > 0 %}
+                                <form action="/prenota" method="post" class="prenota-form">
+                                    <input type="hidden" name="id_libro" value="{{ Libri['id_libro'] }}">
+                                    <button type="submit" class="btn-prenota">Prenota</button>
+                                </form>
+                                {% else %}
+                                <span class="non-disponibile">Non disponibile</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </p>
+            </div>
+            <div class="card hidden" id="settings-content">
+    <h2>Le tue prenotazioni</h2>
+    <table class="book-table">
+        <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Autore</th>
+                <th>ISBN</th>
+                <th>Data Prestito</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prestito in prestiti %}
+            <tr>
+                <td>{{ prestito[0] }}</td>
+                <td>{{ prestito[1] }}</td>
+                <td>{{ prestito[2] }}</td>
+                <td>{{ prestito[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+            
+        </main>
+    </div>
+    <script src="/static/script_js.js"></script>
+</body>
+</html>

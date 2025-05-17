@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aggiungi Libro</title>
+  <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Navbar -->
+    <header>
+      <h1>Gestione Libri</h1>
+    </header>
+    <nav>
+      <ul>
+        <li><a href="/dashboard" id="home">Prenota</a></li>
+        <li><a href="/dashboard" id="stats">Elenco Libri</a></li>
+        <li><a href="/dashboard" id="settings">Prenotazioni</a></li>
+        <li><a href="/add_book" id="settings">Gestione Libri</a></li>
+      </ul>
+    </nav>
+
+    <!-- Form aggiunta libro -->
+    <main>
+      <div class="add-book-form">
+        <h2>Inserisci un Nuovo Libro</h2>
+        <form action="/add_book" method="post">
+          <div class="form-group">
+            <label for="titolo">Titolo</label>
+            <input type="text" name="titolo" id="titolo" required>
+          </div>
+          <div class="form-group">
+            <label for="autore">Autore</label>
+            <input type="text" name="autore" id="autore" required>
+          </div>
+          <div class="form-group">
+            <label for="anno_pubblicazione">Anno di Pubblicazione</label>
+            <input type="number" name="anno_pubblicazione" id="anno_pubblicazione" required>
+          </div>
+          <div class="form-group">
+            <label for="editore">Editore</label>
+            <input type="text" name="editore" id="editore" required>
+          </div>
+          <div class="form-group">
+            <label for="isbn">ISBN</label>
+            <input type="text" name="isbn" id="isbn" required>
+          </div>
+          <div class="form-group">
+            <label for="disponibilita">Disponibilità</label>
+            <input type="number" name="disponibilita" id="disponibilita" required>
+          </div>
+          <button type="submit" class="btn-green">Aggiungi Libro</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
