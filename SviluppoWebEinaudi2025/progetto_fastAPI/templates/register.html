@@ -3,54 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aggiungi Libro</title>
-  <link rel="stylesheet" href="../static/styles.css">
+  <title>Registrazione</title>
+  <link rel="stylesheet" href="../static/reg.css">
 </head>
 <body>
   <div class="container">
     <!-- Navbar -->
     <header>
-      <h1>Gestione Libri</h1>
+      <h1>Registrazione Utente</h1>
     </header>
-    <nav>
-      <ul>
-        <li><a href="/dashboard" id="home">Prenota</a></li>
-        <li><a href="/dashboard" id="stats">Elenco Libri</a></li>
-        <li><a href="/dashboard" id="settings">Prenotazioni</a></li>
-        <li><a href="/add_book" id="settings">Gestione Libri</a></li>
-      </ul>
-    </nav>
 
-    <!-- Form aggiunta libro -->
+    <!-- Form registrazione -->
     <main>
-      <div class="add-book-form">
-        <h2>Inserisci un Nuovo Libro</h2>
-        <form action="/add_book" method="post">
+      <div class="registration-form">
+        <h2>Crea un nuovo account</h2>
+        <form action="/register" method="post">
           <div class="form-group">
-            <label for="titolo">Titolo</label>
-            <input type="text" name="titolo" id="titolo" required>
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" id="nome" required>
           </div>
           <div class="form-group">
-            <label for="autore">Autore</label>
-            <input type="text" name="autore" id="autore" required>
+            <label for="cognome">Cognome</label>
+            <input type="text" name="cognome" id="cognome" required>
           </div>
           <div class="form-group">
-            <label for="anno_pubblicazione">Anno di Pubblicazione</label>
-            <input type="number" name="anno_pubblicazione" id="anno_pubblicazione" required>
+            <label for="data_nascita">Data di nascita</label>
+            <input type="date" name="data_nascita" id="data_nascita" required>
           </div>
           <div class="form-group">
-            <label for="editore">Editore</label>
-            <input type="text" name="editore" id="editore" required>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
           </div>
           <div class="form-group">
-            <label for="isbn">ISBN</label>
-            <input type="text" name="isbn" id="isbn" required>
+            <label for="telefono">Telefono</label>
+            <input type="text" name="telefono" id="telefono" required>
           </div>
           <div class="form-group">
-            <label for="disponibilita">Disponibilità</label>
-            <input type="number" name="disponibilita" id="disponibilita" required>
+            <label for="nome_utente">Username</label>
+            <input type="text" name="nome_utente" id="nome_utente" required>
           </div>
-          <button type="submit" class="btn-green">Aggiungi Libro</button>
+          <div class="form-group">
+            <label for="passwd">Password</label>
+            <input type="password" name="passwd" id="passwd" required>
+          </div>
+          <button type="submit" class="btn-green">Registrati</button>
         </form>
       </div>
     </main>
