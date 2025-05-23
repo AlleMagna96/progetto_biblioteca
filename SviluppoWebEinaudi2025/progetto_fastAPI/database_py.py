@@ -1,12 +1,12 @@
 import mysql.connector 
 from decimal import Decimal
 from typing import List, Dict
-from datetime import datetime
+from datetime import date
 
 conn = mysql.connector.connect(
-    host=" localhost", #sostituisci l'indirizzo IP del server con il DB dentro
-    user="root", #nome utente
-    password="",  #passw account 
+    host="192.168.3.92", #sostituisci l'indirizzo IP del server con il DB dentro
+    user="casarini_davide", #nome utente
+    password="davi2005",  #passw account 
     database="casarini_davide", #nome_db
     port=3306, #porta default di mySQL
     )
@@ -116,7 +116,7 @@ def decrementa_disponibilita(id_libro):
 
 def aggiungi_prestito(id_libro, id_utente, data_prestito):
     cur = conn.cursor()
-    data_oggi=datetime.date.today()
+    data_oggi=date.today()
     query = """
         INSERT INTO Prestiti (id_libro, id_utente, data_prestito)
         VALUES (%s, %s, %s)
@@ -173,3 +173,4 @@ def search_products(
 
 if __name__ == '__main__':
     db_get_utenti({"username" : "casaro"})
+    
