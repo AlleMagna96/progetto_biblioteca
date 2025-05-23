@@ -48,13 +48,12 @@
                             <td>{{ Libri['anno_pubblicazione'] }}</td>
                             <td>{{ Libri['editore'] }}</td>
                             <td>{{ Libri['isbn'] }}</td>
-                            <td>{{ Libri['disponibilita'] }}</td>
+                            <td id="dispo">{{ Libri['disponibilita'] }}</td>
                             <td>
                                 {% if Libri['disponibilita'] > 0 %}
                                 <form action="/prenota" method="post" class="prenota-form">
                                     <input type="hidden" name="id_libro" value="{{ Libri['id_libro'] }}">
-                                    <button type="submit" class="btn-prenota">Prenota</button>
-                                </form>
+                                    <button type="button" class="btn-prenota" onclick="prenotaLibro({{Libri['id_libro']}})">Prenota</button>                                </form>
                                 {% else %}
                                 <span class="non-disponibile">Non disponibile</span>
                                 {% endif %}
@@ -92,6 +91,34 @@
             
         </main>
     </div>
-    <script src="/static/script_js.js"></script>
+    <script src="../static/script_js.js"></script>
 </body>
+<script>
+function prenotaLibro(idLibro) {
+        fetch('/prenota', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_libro: idLibro })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Trova il campo 'disponibilita' e aggiorna il valore
+                var disponibilita = document.getElementById('dispo');
+    
+                // Nasconde il pulsante se la disponibilità arriva a zero
+                if (currentDisponibilita - 1 === 0) {
+                    document.querySelector(`button[onclick="prenotaLibro('${idLibro}')"]`).style.display = 'none';
+                }
+            } else {
+                alert('Errore durante la prenotazione');
+            }
+        })
+        .catch(error => console.error('Errore nella richiesta:', error));
+    }
+    
+</script>
+
 </html>
