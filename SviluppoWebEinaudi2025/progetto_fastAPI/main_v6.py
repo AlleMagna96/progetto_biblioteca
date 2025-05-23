@@ -12,7 +12,10 @@ from fastapi.templating import Jinja2Templates
 import database_py
 from datetime import datetime
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from pydantic import BaseModel
 
+class Prenotazione(BaseModel):
+    id_libro: int
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static") 
@@ -116,7 +119,8 @@ def add_book(
     return RedirectResponse(url="/dashboard", status_code=303)
 
 
-'''@app.post("/prenota")
+'''
+@app.post("/prenota")
 def prenota_libro(request: Request, id_libro: int = Form(...), user=Depends(manager)):
     utente = database_py.db_get_utenti(user[6])
     id_utente = utente[0]
@@ -136,44 +140,28 @@ def prenota_libro(request: Request, id_libro: int = Form(...), user=Depends(mana
     print("Prenotazione ricevuta per ID libro:", id_libro)
 '''
 @app.post("/prenota")
-def prenota_libro(request: Request,id_libro: int = Form(...),user=Depends(manager) ):
-    try:
-        # Verifica se l'utente esiste nel database
-        utente = database_py.db_get_utenti(user[6])
-        if not utente:
-            raise HTTPException(status_code=404, detail="Utente non trovato")
-        
-        id_utente = utente[0]  # Supponendo che l'ID sia il primo campo
+async def prenota_libro(request: Request,prenotazione: Prenotazione,user=Depends(manager) ):
+    id_libro = prenotazione.id_libro
+    print("prenota")
+    # Verifica se l'utente esiste nel database
+    utente = database_py.db_get_utenti(user[6])
+    if not utente:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+    
+    id_utente = utente[0]  # Supponendo che l'ID sia il primo campo
 
-        # Debug: stampa l'ID libro (opzionale)
-        print("Prenotazione ricevuta per ID libro:", id_libro)
+    # Debug: stampa l'ID libro (opzionale)
+    print("Prenotazione ricevuta per ID libro:", id_libro)
 
-        # Verifica disponibilità libro (aggiungi questa funzione se non esiste)
-        libro = database_py.get_libro(id_libro)
-        if not libro or libro["disponibilita"] <= 0:
-            return templates.TemplateResponse(
-                "dashboard.html",
-                {"request": request, "error": "Libro non disponibile!"},
-                status_code=400
-            )
+    # Decrementa disponibilità e aggiunge prestito
+    database_py.decrementa_disponibilita(id_libro)
+    database_py.aggiungi_prestito(
+        id_libro=id_libro,
+        id_utente=id_utente,
+        data_prestito=datetime.now().date()
+    )
 
-        # Decrementa disponibilità e aggiunge prestito
-        database_py.decrementa_disponibilita(id_libro)
-        database_py.aggiungi_prestito(
-            id_libro=id_libro,
-            id_utente=id_utente,
-            data_prestito=datetime.now().date()
-        )
-
-        return RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
-
-    except Exception as e:
-        print("Errore durante la prenotazione:", str(e))
-        return templates.TemplateResponse(
-            "dashboard.html",
-            {"request": request, "error": "Errore durante la prenotazione"},
-            status_code=500
-        )
+    return {"success": True}
 
 
 @app.get("/home_search")
