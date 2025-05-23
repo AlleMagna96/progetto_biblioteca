@@ -27,14 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Mostra il contenuto Home di default
     homeContent.classList.remove('hidden');
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".btn-prenota");
-    buttons.forEach(button => {
-        button.addEventListener("click", function () {
-            button.innerText = "⏳ Prenotazione...";
-            button.disabled = true;
-        });
-    });
+
+     
 });
