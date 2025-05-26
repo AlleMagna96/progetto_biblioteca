@@ -13,6 +13,9 @@ import database_py
 from datetime import datetime
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel
+from fastapi import APIRouter
+
+router = APIRouter()
 
 class Prenotazione(BaseModel):
     id_libro: int
@@ -86,15 +89,23 @@ def register_user(
 
 @app.get("/dashboard")
 def dashboard(request: Request, user = Depends(manager)):
-    dati = database_py.db_get_products({})
-    permessi = user[8]
+    # Recupera tutti i libri
+    tutti_libri = database_py.db_get_products({})
+    
+    # Recupera i prestiti dell'utente
     id_utente = database_py.db_get_utenti(user[6])[0]
     prestiti = database_py.get_prestiti_utente(id_utente)
+    
+    # Prepara i dati per la dashboard
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
-        "products": dati,
+        "products": tutti_libri,
         "prestiti": prestiti,
-        "permessi": permessi
+        "permessi": user[8],
+        "nome_utente": f"{user[1]} {user[2]}",  # Nome + Cognome
+        "num_prestiti": len(prestiti),
+        "libri_totali": len(tutti_libri),
+        "ultimi_arrivi": sorted(tutti_libri, key=lambda x: x['id_libro'], reverse=True)[:4]
     })
 
 
@@ -164,6 +175,11 @@ async def prenota_libro(request: Request,prenotazione: Prenotazione,user=Depends
     return {"success": True}
 
 
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("session_token")  # Cancella il cookie di sessione
+    return {"message": "Logout effettuato"}
+
 @app.get("/home_search")
 async def search_page(request: Request): #user = Depends(manager))
     return templates.TemplateResponse("search.html", {"request": request})
@@ -179,3 +195,5 @@ def search(
     # Chiamata alla funzione del database per ottenere i risultati
     results = database_py.search_products(title, min_quantity, max_price, in_stock)
     return results
+
+
