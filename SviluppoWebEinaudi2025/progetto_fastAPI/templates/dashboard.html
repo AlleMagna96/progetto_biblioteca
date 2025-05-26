@@ -6,26 +6,136 @@
     <title>Dashboard Biblioteca</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        /* Stili migliorati per le azioni rapide */
+        .quick-actions {
+            margin: 25px 0;
+        }
+        
+        .quick-actions h3 {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .action-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .action-btn i {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .action-btn span {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .action-btn small {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .action-btn:nth-child(2) {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        @media (max-width: 600px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
 
+        /* Miglioramenti alla sezione ultimi arrivi */
+        .recent-books {
+            margin-top: 30px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .recent-books h3 {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .book-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .book-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .book-item h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .book-author, .book-isbn {
+            margin: 3px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
         <header class="dashboard-header">
             <h1><i class="fas fa-book-open"></i> Dashboard Biblioteca</h1>
-            <div class="user-info" onclick="toggleUserDropdown()">
-                <span class="user-name">Ciao, {{  nome_utente }}!</span>
+            <div class="user-info">
+                <span class="user-name">Ciao, {{ nome_utente }}!</span>
                 <i class="fas fa-user-circle"></i>
-                <div class="user-dropdown" id="userDropdown">
-                    <div class="user-dropdown-header">
-                        <h3>{{ nome }}</h3>
-                        <p>{{ email }}</p>
-                    </div>
-                    <ul class="user-dropdown-menu">
-                        <li><a href="#"><i class="fas fa-user"></i> Profilo</a></li>
-                        <li><a href="#"><i class="fas fa-cog"></i> Impostazioni</a></li>
-                        <li><a href="#" class="logout-btn" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout </a></li>
-                    </ul>
-                </div>
             </div>
         </header>
 
@@ -34,34 +144,56 @@
                 <li><a href="#home" id="home" class="nav-active"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="#elenco" id="stats"><i class="fas fa-book"></i> Elenco Libri</a></li>
                 <li><a href="#" id="settings"><i class="fas fa-list-check"></i> Prenotazioni</a></li>
-                {%if permessi == 1 %}
+                {% if permessi == 1 %}
                 <li><a href="/add_book" id="manage-books"><i class="fas fa-gear"></i> Gestione Libri</a></li>
                 {% endif %}
             </ul>
         </nav>
         
         <main class="dashboard-main">
-            <!-- Il resto del tuo contenuto rimane invariato -->
             <div class="card active" id="home-content">
                 <div class="welcome-message">
                     <h2><i class="fas fa-hand-wave"></i> Benvenuto nella Biblioteca!</h2>
                     <p>Utilizza il menu di navigazione per accedere alle diverse sezioni.</p>
-                    <div class="stats-cards">
-                        <div class="stat-card">
-                            <i class="fas fa-book"></i>
-                            <span class="count">{{ total_books }}</span>
-                            <span class="label">Libri totali</span>
+                </div>
+
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <h3><i class="fas fa-list-check"></i> I tuoi prestiti attivi</h3>
+                        <p class="stat-value">{{ num_prestiti }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3><i class="fas fa-book"></i> Libri disponibili</h3>
+                        <p class="stat-value">{{ libri_totali }}</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3><i class="fas fa-bolt"></i> Azioni rapide</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="document.getElementById('stats').click()">
+                            <i class="fas fa-search"></i>
+                            <span>Cerca libri</span>
+                            <small>Esplora il catalogo completo</small>
+                        </button>
+                        <button class="action-btn" onclick="document.getElementById('settings').click()">
+                            <i class="fas fa-list-check"></i>
+                            <span>Le tue prenotazioni</span>
+                            <small>Gestisci i tuoi prestiti</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="recent-books">
+                    <h3><i class="fas fa-star"></i> Ultimi arrivi</h3>
+                    <div class="book-list">
+                        {% for libro in ultimi_arrivi %}
+                        <div class="book-item">
+                            <h4>{{ libro.titolo }}</h4>
+                            <p class="book-author">{{ libro.autore }}</p>
+                            <p class="book-isbn">ISBN: {{ libro.isbn }}</p>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-check-circle"></i>
-                            <span class="count">{{ available_books }}</span>
-                            <span class="label">Disponibili</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-clock"></i>
-                            <span class="count">{{ your_loans }}</span>
-                            <span class="label">Tue prenotazioni</span>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -69,10 +201,6 @@
             <div class="card hidden" id="stats-content">
                 <div class="card-header">
                     <h2><i class="fas fa-book"></i> Elenco Libri</h2>
-                    <div class="search-box">
-                        <input type="text" placeholder="Cerca libro...">
-                        <button><i class="fas fa-search"></i></button>
-                    </div>
                 </div>
                 
                 <div class="table-container">
@@ -82,7 +210,7 @@
                                 <th>Titolo</th>
                                 <th>Autore</th>
                                 <th>Anno</th>
-                                <th>Disponibilità</th>
+                                <th>DisponibilitÃ </th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -150,26 +278,7 @@
 
     <script src="../static/script_js.js"></script>
     <script>
-    // Funzione per il dropdown utente
-    function toggleUserDropdown() {
-        const dropdown = document.getElementById('userDropdown');
-        dropdown.classList.toggle('show');
-    }
-    
-    // Chiudi il dropdown se si clicca fuori
-    window.onclick = function(event) {
-        if (!event.target.matches('.user-info') && !event.target.closest('.user-info')) {
-            const dropdowns = document.getElementsByClassName("user-dropdown");
-            for (let i = 0; i < dropdowns.length; i++) {
-                const openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    }
-    
-    // Il resto del tuo script esistente
+    // Navigazione tra le schede
     document.querySelectorAll('nav a').forEach(link => {
         link.addEventListener('click', function(e) {
             if (this.getAttribute('href') && this.getAttribute('href').startsWith('/')) {
@@ -193,6 +302,7 @@
         });
     });
 
+    // Prenotazione libro con AJAX
     async function prenotaLibro(idLibro, titolo, autore, isbn) {
         const disponibilitaElement = document.getElementById(`dispo-${idLibro}`);
         const currentDisponibilita = parseInt(disponibilitaElement.textContent);
@@ -231,6 +341,7 @@
         }
     }
 
+    // Aggiungi una nuova prenotazione alla tabella
     function aggiungiPrenotazione(titolo, autore, isbn) {
         const tbody = document.querySelector("#prenotazioni-body");
         const now = new Date();
@@ -248,6 +359,7 @@
         tbody.prepend(newRow);
     }
 
+    // Mostra notifiche temporanee
     function showNotification(message, type) {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
@@ -263,7 +375,6 @@
             setTimeout(() => notification.remove(), 500);
         }, 3000);
     }
-    
     </script>
 </body>
 </html>
