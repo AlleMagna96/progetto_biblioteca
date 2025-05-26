@@ -4,14 +4,14 @@ from typing import List, Dict
 from datetime import date
 
 conn = mysql.connector.connect(
-    host="192.168.3.92", #sostituisci l'indirizzo IP del server con il DB dentro
-    user="casarini_davide", #nome utente
-    password="davi2005",  #passw account 
+    host="localhost", #sostituisci l'indirizzo IP del server con il DB dentro
+    user="root", #nome utente
+    password="",  #passw account 
     database="casarini_davide", #nome_db
     port=3306, #porta default di mySQL
     )
 
-# a tutti passerei un dizionario così che dentro abbia le informazioni per presonalizzare le query 
+# a tutti passerei un dizionario cosÃ¬ che dentro abbia le informazioni per presonalizzare le query 
 def db_get_utenti(user):
     cur = conn.cursor()
     print(user)
@@ -173,4 +173,3 @@ def search_products(
 
 if __name__ == '__main__':
     db_get_utenti({"username" : "casaro"})
-    
