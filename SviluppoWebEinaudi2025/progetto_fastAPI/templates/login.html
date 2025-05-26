@@ -3,27 +3,211 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="../static/style.css">
+  <title>Login Biblioteca</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      --success-color: #2ecc71;
+      --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--box-shadow);
+      padding: 40px;
+      text-align: center;
+      transform: translateY(0);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .login-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+    }
+
+    .login-box h2 {
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 28px;
+      position: relative;
+    }
+
+    .login-box h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: var(--secondary-color);
+    }
+
+    .textbox {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .textbox input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .textbox input:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .textbox i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #95a5a6;
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .textbox input:focus + i {
+      color: var(--secondary-color);
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 10px;
+      box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+    }
+
+    .btn:hover {
+      background: linear-gradient(to right, #2980b9, #c0392b);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .register-link {
+      margin-top: 25px;
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+
+    .register-link a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .register-link a:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+
+body {
+    background: linear-gradient(270deg, #3b5998, #c5442ee5, #3498db);
+    background-size: 600% 600%;
+    animation: gradientAnimation 15s ease infinite;
+}
+
+
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="login-box">
-      <h2>Login</h2>
-      <form action="/login" method="post">
-        <div class="textbox">
-          <input type="text" id="username" name="username" placeholder="Username" required>
-        </div>
-        <div class="textbox">
-          <input type="password" id="password" name="password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn">Accedi</button>
-      </form>
-      <!-- Aggiunto il link per la registrazione sotto il form -->
-      <p class="register-link">Non hai un account? <a href="/register">Registrati qui</a></p>
+  <div id="particles-js"></div>
+    <div class="container">
+      <div class="login-box">
+        <h2><i class="fas fa-book-open"></i> Accedi</h2>
+        <form action="/login" method="post">
+          <div class="textbox">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" placeholder="Username" required>
+          </div>
+          <div class="textbox">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn">Accedi <i class="fas fa-sign-in-alt"></i></button>
+        </form>
+        <p class="register-link">Non hai un account? <a href="/register">Registrati qui</a></p>
+      </div>  
     </div>
   </div>
 
-  <script src="script_js.js"></script>
+  <script >
+    tsParticles.load("particles-js", {
+        particles: {
+            number: { value: 80 },
+            color: { value: "#ffffff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: true },
+            size: { value: 3 },
+            move: { speed: 2, direction: "none", out_mode: "bounce" }
+        }
+    });
+  </script>
 </body>
 </html>
