@@ -15,6 +15,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel
 from fastapi import APIRouter
 
+
+
 router = APIRouter()
 
 class Prenotazione(BaseModel):
@@ -85,6 +87,7 @@ def register_user(
     dati = (nome, cognome, data_nascita, email, telefono, nome_utente, passwd)
     database_py.inserisci_utente(dati)
     return RedirectResponse(url="/", status_code=303)
+
 
 
 @app.get("/dashboard")
@@ -195,5 +198,3 @@ def search(
     # Chiamata alla funzione del database per ottenere i risultati
     results = database_py.search_products(title, min_quantity, max_price, in_stock)
     return results
-
-
