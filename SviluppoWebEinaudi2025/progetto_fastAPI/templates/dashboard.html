@@ -127,6 +127,79 @@
             font-size: 0.9rem;
             color: #666;
         }
+
+        /* Stili per la barra di ricerca */
+        .search-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Stili per i risultati di ricerca */
+        .search-results {
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .search-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .search-tab.active {
+            border-bottom-color: #6a11cb;
+            color: #6a11cb;
+            font-weight: 600;
+        }
+        
+        .search-results-content {
+            padding: 15px;
+        }
+        
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -203,14 +276,33 @@
                     <h2><i class="fas fa-book"></i> Elenco Libri</h2>
                 </div>
                 
-                <div class="table-container">
+                <!-- Barra di ricerca aggiunta qui -->
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Cerca libri per titolo, autore o ISBN...">
+                    <button class="search-btn" onclick="searchBooks()">
+                        <i class="fas fa-search"></i> Cerca
+                    </button>
+                </div>
+                
+                <div class="search-results hidden" id="search-results">
+                    <div class="search-tabs">
+                        <div class="search-tab active" onclick="switchSearchTab('all')">Tutti i libri</div>
+                        <div class="search-tab" onclick="switchSearchTab('available')">Disponibili</div>
+                        <div class="search-tab" onclick="switchSearchTab('loans')">Miei prestiti</div>
+                    </div>
+                    <div class="search-results-content" id="search-results-content">
+                        <!-- I risultati verranno inseriti qui -->
+                    </div>
+                </div>
+                
+                <div class="table-container" id="full-table">
                     <table class="book-table">
                         <thead>
                             <tr>
                                 <th>Titolo</th>
                                 <th>Autore</th>
                                 <th>Anno</th>
-                                <th>DisponibilitÃ </th>
+                                <th>Disponibilità</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
@@ -277,104 +369,6 @@
     </div>
 
     <script src="../static/script_js.js"></script>
-    <script>
-    // Navigazione tra le schede
-    document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (this.getAttribute('href') && this.getAttribute('href').startsWith('/')) {
-                return;
-            }
-            
-            e.preventDefault();
-            
-            document.querySelectorAll('nav a').forEach(navLink => {
-                navLink.classList.remove('nav-active');
-            });
-            this.classList.add('nav-active');
-            
-            const target = this.id + '-content';
-            document.querySelectorAll('.card').forEach(card => {
-                card.classList.remove('active');
-                card.classList.add('hidden');
-            });
-            document.getElementById(target).classList.remove('hidden');
-            document.getElementById(target).classList.add('active');
-        });
-    });
 
-    // Prenotazione libro con AJAX
-    async function prenotaLibro(idLibro, titolo, autore, isbn) {
-        const disponibilitaElement = document.getElementById(`dispo-${idLibro}`);
-        const currentDisponibilita = parseInt(disponibilitaElement.textContent);
-        const button = document.querySelector(`button[onclick*="${idLibro}"]`);
-        
-        try {
-            const response = await fetch('/prenota', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_libro: idLibro })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                const newDisponibilita = currentDisponibilita - 1;
-                disponibilitaElement.innerHTML = newDisponibilita > 0 ? 
-                    `<span class="available">${newDisponibilita} disponibili</span>` : 
-                    `<span class="unavailable">Esaurito</span>`;
-                
-                if (newDisponibilita === 0) {
-                    button.innerHTML = '<i class="fas fa-times-circle"></i> Esaurito';
-                    button.classList.add('disabled');
-                    button.onclick = null;
-                }
-                
-                aggiungiPrenotazione(titolo, autore, isbn);
-                showNotification('Prenotazione effettuata con successo!', 'success');
-            } else {
-                showNotification('Errore: ' + (data.message || 'Prenotazione fallita'), 'error');
-            }
-        } catch (error) {
-            console.error('Errore:', error);
-            showNotification('Errore di connessione', 'error');
-            disponibilitaElement.textContent = currentDisponibilita;
-        }
-    }
-
-    // Aggiungi una nuova prenotazione alla tabella
-    function aggiungiPrenotazione(titolo, autore, isbn) {
-        const tbody = document.querySelector("#prenotazioni-body");
-        const now = new Date();
-        const formattedDate = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
-        
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-            <td>${titolo}</td>
-            <td>${autore}</td>
-            <td>${isbn}</td>
-            <td>${formattedDate}</td>
-            <td><span class="status active">In corso</span></td>
-        `;
-        
-        tbody.prepend(newRow);
-    }
-
-    // Mostra notifiche temporanee
-    function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            ${message}
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 500);
-        }, 3000);
-    }
-    </script>
 </body>
 </html>
